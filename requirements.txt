@@ -1,0 +1,6 @@
+bibtexparser
+bs4
+docstring_parser
+lxml
+pandas
+unidecode
