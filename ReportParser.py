@@ -15,39 +15,6 @@ from unidecode import unidecode
 from make_fmriprep_patterns import make_fmriprep_patterns
 from parse_report import parse_report
 
-# Compile regex patterns
-# err_pat, getfig_pat, func_pat, fsub_pat, \
-# title_pat, subtitle_pat, bp_pat = \
-# tuple(map(re.compile, make_fmriprep_patterns().values()))
-# 
-# progdir = os.path.dirname(ReportParser.__file__)
-# os.path.join(progdir, 'ReportParserPatterns.json')
-# with  as jfile:
-# # Artifacts to strip
-# err_msg = ' '.join(('\s*Problem loading figure',
-#                     '.*\.svg.',
-#                     'If the link below works, please try reloading',
-#                     'the report in your browser.\s*'))
-# err_pat = re.compile(err_msg)
-# getfig_pat = re.compile('\s*Get figure file\: .*.svg\s*')
-# 
-# # Headers
-# func_pat = re.compile('Reports for: session .*, task .*\.')
-# fsub_pat = re.compile('\n*Summary\n|\n*Confounds collected\n*')
-# title_pat = re.compile('<div id=\"\w*\">\n')
-# subtitle_pat = re.compile('.*\:\s{1}')
-# 
-# # Boilerplate section subtitles
-# bp_pat = '|'.join(('\n*Anatomical data preprocessing\n',
-#                    '\n*Functional data preprocessing\n',
-#                    '\n*Copyright Waiver\n',
-#                    '\n*References\n',
-#                    '\n*Bibliography\n'))
-# bp_pat = re.compile(bp_pat)
-          
-
-
-
 
 class ReportParser():
     def __init__(self,
@@ -62,6 +29,26 @@ class ReportParser():
                  **kwargs):
         """
         Instantiate a ``ReportParser`` object.
+        
+        Args:
+            src: str, PathLike or PosixPath (Default = None)
+                Path to the html report file.
+
+            json_file: str, PathLike or PosixPath (Default = None)
+                Path to a .json file containing user-defined regex
+                pattern alternatives to parse the html report.
+
+            features: str (Default = 'lxml')
+                String representing the desired html parser engine.
+                See ``help(bs4.BeautifulSoup.__init__)`` for details.
+                
+            cols: list (Default = ['global_signal', 'csf', 'white_matter',
+                                   'csf_wm', 'framewise_displacement',
+                                   'std_dvars'])
+                List of columns to include in the ``confounds_summary``.
+                Entries must be found in the corresponding
+                "*confounds.tsv" file. The default value is a List
+                containing the variables used in FMRIPrep report carpet plot.
         """
         
         self.src = src
@@ -69,26 +56,16 @@ class ReportParser():
 
         if kwargs is None:
             kwargs = {}
-    # Compile regex patterns
+    # Compile regex patterns and set as attributes
         progdir = os.path.dirname(__file__)
         if json_file is None:
             json_file = os.path.join(progdir, 'ReportParserPatterns.json')
         with open(json_file, 'r') as jfile:
             patterns = json.load(jfile)
             jfile.close()
-        __attributes__ = patterns    
-        # __attributes__ = dict(err_pat=err_pat,
-        #                       getfig_pat=getfig_pat,
-        #                       title_pat=title_pat,
-        #                       subtitle_pat=subtitle_pat,
-        #                       func_pat=func_pat,
-        #                       fsub_pat=fsub_pat,
-        #                       bp_pat=bp_pat,
-        #                       cols=cols)
-
+        __attributes__ = patterns
         __attributes__.update(kwargs)
         self.__attributes__ = __attributes__
-        
         [setattr(self, f'__{item[0]}__', item[1])
          for item in tuple(__attributes__.items())]
 
