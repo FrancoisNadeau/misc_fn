@@ -1,6 +1,6 @@
 {
   "err_pat": "\\s*Problem loading figure .*\\.svg. If the link below works, please try reloading the report in your browser.\\s*",
-  "getfig_pat": "\\s*Get figure file\\: .*.svg\\s*",
+  "getfig_pat": "\\s*Get figure file\\:( .*.svg?)\\s*",
   "func_pat": "Reports for: session .*, task .*\\.",
   "fsub_pat": "\n*Summary\n|\n*Confounds collected\n*",
   "title_pat": "<div id=\"\\w*\">\n",
